@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 
 
-class Model(BaseEstimator, ClassifierMixin, ABC):
+class Model(ClassifierMixin, BaseEstimator, ABC):
     """
     FeatureExtractor class to handle feature extraction from audio data.
     """
