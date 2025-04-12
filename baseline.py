@@ -48,7 +48,7 @@ def extract_mfcc(file_path):
     
     # Extract MFCCs with paper's parameters
     mfccs = librosa.feature.mfcc(
-        y=audio, sr=sr, n_mfcc=40, n_fft=2048,
+        y=silence_removed, sr=sr, n_mfcc=40, n_fft=2048,
         hop_length=512, window='hann'
     )
     
