@@ -37,4 +37,4 @@ class HFCC(FeatureExtractor):
         Returns:
             np.ndarray: HFCC features.
         """
-        return np.array([self._extract_hfcc(audio, self.sr) for audio in tqdm(audios, desc="Extracting HFCCs")])
+        return np.array([self._extract_hfcc(audio, self.sr) for audio in audios])

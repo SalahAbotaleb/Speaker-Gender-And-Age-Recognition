@@ -50,4 +50,4 @@ class Jitter(FeatureExtractor):
         Returns:
             np.ndarray: Jitter features.
         """
-        return np.array([self._extract_jitter(audio, self.sr) for audio in tqdm(audios, desc="Extracting Jitter")]).reshape(-1, 1)
+        return np.array([self._extract_jitter(audio, self.sr) for audio in audios]).reshape(-1, 1)

@@ -36,4 +36,4 @@ class MFCC(FeatureExtractor):
         Returns:
             np.ndarray: MFCC features.
         """
-        return np.array([self._extract_mfcc(audio, self.sr) for audio in tqdm(audios, desc="Extracting MFCCs")])
+        return np.array([self._extract_mfcc(audio, self.sr) for audio in audios])

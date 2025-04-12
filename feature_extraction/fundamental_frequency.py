@@ -37,4 +37,4 @@ class FundamentalFrequency(FeatureExtractor):
         Returns:
             np.ndarray: Fundamental Frequency features.
         """
-        return np.array([self._extract_f0(audio, self.sr) for audio in tqdm(audios, desc="Extracting F0")]).reshape(-1, 1)  
+        return np.array([self._extract_f0(audio, self.sr) for audio in audios]).reshape(-1, 1)  
