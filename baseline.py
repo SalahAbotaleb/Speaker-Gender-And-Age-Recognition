@@ -17,11 +17,9 @@ audio_dir = ".\\data\\filtered_clips"
 # Load metadata
 df = pd.read_csv(metadata_path, sep='\t')
 
-# Filter valid samples with age and gender info
-df = df[df['age'].notna() & df['gender'].notna() & df['label'].notna()]
 
 # Filter valid classes and balance to 670 samples per class
-samples = df['label'].value_counts().min()
+samples = 100
 balanced_samples = []
 for cls in df['label'].unique():
     cls_df = df[df['label'] == cls]
@@ -97,7 +95,7 @@ y = np.array(labels)
 # 3. Train/Test Split (75:25)
 # ---------------------------------
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.25, random_state=42, stratify=y
+    X, y, test_size=0.2, random_state=42, stratify=y
 )
 
 # 4. SVM Training with Grid Search (or use paper's best params)
