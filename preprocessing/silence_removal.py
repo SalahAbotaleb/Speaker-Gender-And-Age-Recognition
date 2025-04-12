@@ -23,7 +23,7 @@ class SilenceRemover(Preprocessor):
             # If there are no non-silent parts, return an empty array with a warning
             if len(non_silent_indices) == 0:
                 print("Warning: No audio above threshold found.")
-                trimmed_audio = np.array([])
+                trimmed_audio = np.array(x.data, dtype=np.float64)
             else:
                 # Identify continuous regions of sound
                 regions = []
@@ -44,6 +44,6 @@ class SilenceRemover(Preprocessor):
                 regions.append((region_start, non_silent_indices[-1]))
                 
                 # Concatenate all non-silent regions
-                trimmed_audio = np.concatenate([x.data[start:end+1] for start, end in regions])
+                trimmed_audio = np.concatenate([x.data[start:end+1] for start, end in regions],dtype=np.float64)
             trimmed_audios.append(trimmed_audio)
         return trimmed_audios
