@@ -1,11 +1,11 @@
-from preprocessing import Preprocessor
+from .preprocessing import Preprocessor
 import librosa
 import numpy as np
 from tqdm import tqdm
 
 class SilenceRemover(Preprocessor):
 
-    def __init__(self, amplitude_threshold=0.01, interval_ratio=0.5):
+    def __init__(self, amplitude_threshold=0.005, interval_ratio=0.5):
         self.amplitude_threshold = amplitude_threshold
         self.interval_ratio = interval_ratio
         super().__init__()

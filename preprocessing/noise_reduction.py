@@ -1,4 +1,4 @@
-from preprocessing import Preprocessor
+from .preprocessing import Preprocessor
 import noisereduce as nr
 import numpy as np
 from tqdm import tqdm
