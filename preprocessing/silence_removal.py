@@ -1,7 +1,5 @@
 from .preprocessing import Preprocessor
-import librosa
 import numpy as np
-from tqdm import tqdm
 
 class SilenceRemover(Preprocessor):
 
@@ -11,18 +9,15 @@ class SilenceRemover(Preprocessor):
         super().__init__()
 
     def transform(self, X):
-        # Define an amplitude threshold (this value may need to be adjusted depending on your audio)
         trimmed_audios = []
         for x in X:
-            amplitude_threshold = self.amplitude_threshold  # You can tweak this value depending on your requirements
-
             # Find indices where the audio is above the amplitude threshold
-            non_silent = np.abs(x.data) > amplitude_threshold
+            non_silent = np.abs(x.data) > self.amplitude_threshold
             non_silent_indices = np.nonzero(non_silent)[0]
 
             # If there are no non-silent parts, return an empty array with a warning
             if len(non_silent_indices) == 0:
-                print("Warning: No audio above threshold found.")
+                print("Warning: No audio above threshold found. Returning original audio.")
                 trimmed_audio = np.array(x.data, dtype=np.float64)
             else:
                 # Identify continuous regions of sound
@@ -31,7 +26,7 @@ class SilenceRemover(Preprocessor):
                 prev_idx = non_silent_indices[0]
                 
                 # Define gap tolerance (in samples) - adjust as needed
-                gap_tolerance = int(self.interval_ratio * x.sampling_rate)  # 200ms gap tolerance
+                gap_tolerance = int(self.interval_ratio * x.sampling_rate)
                 
                 for idx in non_silent_indices[1:]:
                     # If the gap is too large, end the current region and start a new one
