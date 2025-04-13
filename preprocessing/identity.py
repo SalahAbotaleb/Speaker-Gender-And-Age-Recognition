@@ -1,4 +1,4 @@
-from .preprocessing import Preprocessor
+from preprocessing import Preprocessor
 
 class Identity(Preprocessor):
     """

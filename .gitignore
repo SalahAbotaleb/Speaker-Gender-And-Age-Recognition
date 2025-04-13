@@ -175,5 +175,7 @@ cython_debug/
 .qodo
 
 data
+trials
+.conda
 *.csv
 *.joblib

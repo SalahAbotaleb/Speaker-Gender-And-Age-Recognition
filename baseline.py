@@ -6,28 +6,27 @@ import librosa
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+import noisereduce as nr
 
 # 1. Load and Preprocess Dataset
 # ---------------------------------
 
-metadata_path = "..\\filtered_data_labeled.tsv"
-audio_dir = "..\\filtered_clips"
+metadata_path = ".\\data\\filtered_data_labeled.tsv"
+audio_dir = ".\\data\\filtered_clips"
 
 # Load metadata
 df = pd.read_csv(metadata_path, sep='\t')
 
-# Filter valid samples with age and gender info
-df = df[df['age'].notna() & df['gender'].notna() & df['label'].notna()]
 
 # Filter valid classes and balance to 670 samples per class
-# samples = df['class'].value_counts().min()
-# balanced_samples = []
-# for cls in valid_classes:
-#     cls_df = df[df['class'] == cls]
-#     sampled = cls_df.sample(n=samples, random_state=42)  # Random sampling
-#     balanced_samples.append(sampled)
+samples = 100
+balanced_samples = []
+for cls in df['label'].unique():
+    cls_df = df[df['label'] == cls]
+    sampled = cls_df.sample(n=samples, random_state=42)  # Random sampling
+    balanced_samples.append(sampled)
 
-balanced_df = df # pd.concat(balanced_samples)
+balanced_df = pd.concat(balanced_samples)
 
 # 2. Feature Extraction (MFCCs)
 # ---------------------------------
@@ -42,9 +41,12 @@ def extract_mfcc(file_path):
     except Exception as e:
       return None
     
+    noise_reduced = np.array(nr.reduce_noise(audio, sr=sr, time_mask_smooth_ms=150))
+    silence_removed = np.array(librosa.effects.trim(noise_reduced, top_db=100)[0])
+    
     # Extract MFCCs with paper's parameters
     mfccs = librosa.feature.mfcc(
-        y=audio, sr=sr, n_mfcc=40, n_fft=2048,
+        y=silence_removed, sr=sr, n_mfcc=40, n_fft=2048,
         hop_length=512, window='hann'
     )
     
@@ -93,7 +95,7 @@ y = np.array(labels)
 # 3. Train/Test Split (75:25)
 # ---------------------------------
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.25, random_state=42, stratify=y
+    X, y, test_size=0.2, random_state=42, stratify=y
 )
 
 # 4. SVM Training with Grid Search (or use paper's best params)
