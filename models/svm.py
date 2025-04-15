@@ -22,7 +22,7 @@ class SVM(Model):
         """
 
         # Initialize the SVC model
-        svm = SVC(kernel='rbf', C=1000, gamma=0.0001, random_state=42)
+        svm = SVC(kernel='rbf', C=1000, gamma=0.0001, random_state=42, class_weight='balanced')
 
         if self.config.get('grid_search', False):
         # Define the parameter grid for hyperparameter tuning
