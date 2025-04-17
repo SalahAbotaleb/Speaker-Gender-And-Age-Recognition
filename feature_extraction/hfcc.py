@@ -18,11 +18,12 @@ class HFCC(FeatureExtractor):
         stft = np.abs(librosa.stft(
             y=audio, n_fft=2048, hop_length=512, window='hann'
         ))
-        mel_filter = librosa.filters.mel(sr=sr, n_fft=2048, n_mels=40)
+        mel_filter = librosa.filters.mel(sr=sr, n_fft=2048, n_mels=75)
         hfccs = np.log(np.dot(mel_filter, stft) + 1e-10)
         
         # Take mean across time to get 40 features
-        return np.mean(hfccs, axis=1)
+        #return np.mean(hfccs, axis=1)
+        return np.concatenate([np.mean(hfccs, axis=1), np.std(hfccs, axis=1)])
 
     def fit(self, X, y=None):
         return self
