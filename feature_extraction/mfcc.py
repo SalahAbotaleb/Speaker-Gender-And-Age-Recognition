@@ -20,8 +20,9 @@ class MFCC(FeatureExtractor):
             hop_length=512, window='hann'
         )
         
-        # Take mean across time to get 40 features
-        return np.mean(mfccs, axis=1)
+        
+        #return np.mean(mfccs, axis=1)
+        return np.concatenate((np.mean(mfccs, axis=1), np.std(mfccs, axis=1)))
 
     def fit(self, X, y=None):
         return self
