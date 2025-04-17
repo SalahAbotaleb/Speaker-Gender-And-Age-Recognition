@@ -23,7 +23,7 @@ class HFCC(FeatureExtractor):
         
         # Take mean across time to get 40 features
         #return np.mean(hfccs, axis=1)
-        return np.concatenate([np.mean(hfccs, axis=1), np.std(hfccs, axis=1)])
+        return np.concatenate([np.mean(hfccs, axis=1), np.var(hfccs, axis=1)])
 
     def fit(self, X, y=None):
         return self
