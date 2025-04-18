@@ -13,4 +13,4 @@ class NoiseReducer(Preprocessor):
         super().__init__()
 
     def transform(self, X):
-        return [Audio(np.array(nr.reduce_noise(x.data, sr=x.sampling_rate, time_mask_smooth_ms=150)), x.sampling_rate) for x in X]
+        return [Audio(np.array(nr.reduce_noise(x.data, sr=x.sampling_rate,  prop_decrease=0.95, n_std_thresh_stationary=1.3)), x.sampling_rate) for x in X]
