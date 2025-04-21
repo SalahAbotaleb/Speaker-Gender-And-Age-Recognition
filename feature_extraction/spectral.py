@@ -10,7 +10,7 @@ class SpectralFeatures(FeatureExtractor):
 
     def __init__(self, config: dict = {}):
         super().__init__(config)
-        self.sr = config.get("sr", 22050)
+        self.sr = config.get("sr", 48000)
         self.n_fft = config.get("n_fft", 2048)
         self.hop_length = config.get("hop_length", 512)
 

@@ -10,7 +10,7 @@ class Jitter(FeatureExtractor):
 
     def __init__(self, config: dict = {}):
         super().__init__(config)
-        self.sr = config.get("sr", 22050)
+        self.sr = config.get("sr", 48000)
         self.frame_length = config.get("frame_length", 0.025)  # 25ms
         self.hop_length = config.get("hop_length", 0.01)  # 10ms
 
