@@ -68,8 +68,6 @@ class MFCC(FeatureExtractor):
 
         features = [mfcc]
         if self.use_deltas:
-            if mfcc.shape[1] < 3:  # If MFCCs are too short, skip deltas
-                
             delta_width = max(3, min(9, mfcc.shape[1]) | 1)  # Ensure width is odd and >= 3
             delta_mfcc = librosa.feature.delta(mfcc, width=delta_width)
             delta2_mfcc = librosa.feature.delta(mfcc, order=2, width=delta_width)
