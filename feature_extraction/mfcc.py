@@ -10,16 +10,16 @@ class MFCC(FeatureExtractor):
 
     def __init__(self, config: dict = {}):
         super().__init__(config)
-        self.n_mfcc = config.get("n_mfcc", 30)
+        self.n_mfcc = config.get("n_mfcc", 75)
         self.n_fft = config.get("n_fft", 2048)
-        self.hop_length = config.get("hop_length", 400)
-        self.sr = config.get('sr', 22050)
-        self.context = config.get("context", 1)
+        self.hop_length = config.get("hop_length", 512)
+        self.sr = config.get('sr', 48000)
+        self.context = config.get("context", 3)
 
         self.use_spectral_subtraction = config.get("use_spectral_subtraction", False)
-        self.use_smoothing = config.get("use_smoothing", False)
-        self.use_cmvn = config.get("use_cmvn", True)
-        self.use_deltas = config.get("use_deltas", False)
+        self.use_smoothing = config.get("use_smoothing", True)
+        self.use_cmvn = config.get("use_cmvn", False)
+        self.use_deltas = config.get("use_deltas", True)
 
     def spectral_subtraction(self, y: np.ndarray, sr: int, noise_frames: int = 5) -> np.ndarray:
         
