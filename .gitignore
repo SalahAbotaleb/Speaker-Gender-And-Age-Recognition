@@ -178,3 +178,5 @@ data
 trials
 .conda
 /statistics
+
+extracted_features/**
