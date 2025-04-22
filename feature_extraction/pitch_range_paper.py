@@ -12,7 +12,7 @@ class PitchRange2(FeatureExtractor):
 
     def __init__(self, config: dict = {}):
         super().__init__(config)
-        self.sr = config.get("sr", 22050)
+        self.sr = config.get("sr", 48000) 
 
         # Define 3 filters: 1 LPF and 2 HPFs based on the paper
         self.filters = {

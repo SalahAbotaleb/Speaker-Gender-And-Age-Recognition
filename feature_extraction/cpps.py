@@ -10,7 +10,7 @@ class CPPS(FeatureExtractor):
 
     def __init__(self, config: dict = {}):
         super().__init__(config)
-        self.sr = config.get("sr", 22050)
+        self.sr = config.get("sr", 48000)
 
     def _extract_cpp(self, audio, sr):
         # Compute the cepstrum

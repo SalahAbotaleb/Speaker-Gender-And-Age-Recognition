@@ -11,7 +11,7 @@ class DeltaMFCC(FeatureExtractor):
     def __init__(self, config: dict = {}):
         super().__init__(config)
         self.n_mfcc = config.get("n_mfcc", 13)
-        self.sr = config.get("sr", 22050)
+        self.sr = config.get("sr", 48000)
 
     def _extract_delta_mfcc(self, audio, sr):
         # Extract MFCCs
