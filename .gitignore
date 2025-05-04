@@ -191,3 +191,8 @@ new_env/**
 main2.ipynb
 prediction.ipynb
 *.mp3
+/test_audio_files
+*.txt
+*.pkl
+*.joblib
+*.md

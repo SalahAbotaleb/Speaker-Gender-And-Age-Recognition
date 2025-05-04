@@ -3,7 +3,7 @@ import numpy as np
 
 class SilenceRemover(Preprocessor):
 
-    def __init__(self, amplitude_threshold=0.005, interval_ratio=0.5):
+    def __init__(self, amplitude_threshold=0.0005, interval_ratio=0.5):
         self.amplitude_threshold = amplitude_threshold
         self.interval_ratio = interval_ratio
         super().__init__()

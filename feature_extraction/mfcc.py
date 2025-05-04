@@ -90,14 +90,15 @@ class MFCC(FeatureExtractor):
         # 7. Summarize
         feature_mean = np.mean(stacked_features, axis=0)
         feature_std = np.std(stacked_features, axis=0)
-        feature_median = np.median(stacked_features, axis=0)
-        feature_q25 = np.quantile(stacked_features, 0.25, axis=0)
-        feature_q75 = np.quantile(stacked_features, 0.75, axis=0)
-        feature_min = np.min(stacked_features, axis=0)
-        feature_max = np.max(stacked_features, axis=0)
+        # feature_median = np.median(stacked_features, axis=0)
+        # mode
+        # feature_q25 = np.quantile(stacked_features, 0.25, axis=0)
+        # feature_q75 = np.quantile(stacked_features, 0.75, axis=0)
+        # feature_min = np.min(stacked_features, axis=0)
+        # feature_max = np.max(stacked_features, axis=0)
 
         
-        final_feature_vector = np.concatenate([feature_mean, feature_std, feature_median, feature_q25, feature_q75, feature_min, feature_max])
+        final_feature_vector = np.concatenate([feature_mean, feature_std]) #, feature_median, feature_q25, feature_q75, feature_min, feature_max
 
         return final_feature_vector
 
