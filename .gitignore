@@ -181,3 +181,13 @@ trials
 
 extracted_features/**
 examine_audio.ipynb
+
+myenv/**
+new_env/**
+
+*.joblib
+*.pkl
+
+main2.ipynb
+prediction.ipynb
+*.mp3
