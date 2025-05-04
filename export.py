@@ -6,7 +6,7 @@ import librosa
 import cloudpickle
 from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import FeatureUnion, Pipeline
 import copy
 
 class Audio:
@@ -127,16 +127,16 @@ class MFCC(FeatureExtractor):
 
     def __init__(self, config: dict = {}):
         super().__init__(config)
-        self.n_mfcc = config.get("n_mfcc", 30)
+        self.n_mfcc = config.get("n_mfcc", 75)
         self.n_fft = config.get("n_fft", 2048)
-        self.hop_length = config.get("hop_length", 400)
-        self.sr = config.get('sr', 22050)
-        self.context = config.get("context", 1)
+        self.hop_length = config.get("hop_length", 512)
+        self.sr = config.get('sr', 48000)
+        self.context = config.get("context", 3)
 
         self.use_spectral_subtraction = config.get("use_spectral_subtraction", False)
-        self.use_smoothing = config.get("use_smoothing", False)
-        self.use_cmvn = config.get("use_cmvn", True)
-        self.use_deltas = config.get("use_deltas", False)
+        self.use_smoothing = config.get("use_smoothing", True)
+        self.use_cmvn = config.get("use_cmvn", False)
+        self.use_deltas = config.get("use_deltas", True)
 
     def spectral_subtraction(self, y: np.ndarray, sr: int, noise_frames: int = 5) -> np.ndarray:
         
@@ -207,8 +207,15 @@ class MFCC(FeatureExtractor):
         # 7. Summarize
         feature_mean = np.mean(stacked_features, axis=0)
         feature_std = np.std(stacked_features, axis=0)
+        # feature_median = np.median(stacked_features, axis=0)
+        # mode
+        # feature_q25 = np.quantile(stacked_features, 0.25, axis=0)
+        # feature_q75 = np.quantile(stacked_features, 0.75, axis=0)
+        # feature_min = np.min(stacked_features, axis=0)
+        # feature_max = np.max(stacked_features, axis=0)
+
         
-        final_feature_vector = np.concatenate([feature_mean, feature_std])  # Final vector
+        final_feature_vector = np.concatenate([feature_mean, feature_std]) #, feature_median, feature_q25, feature_q75, feature_min, feature_max
 
         return final_feature_vector
 
@@ -226,6 +233,100 @@ class MFCC(FeatureExtractor):
             np.ndarray: MFCC features.
         """
         return np.array([self._extract_mfcc(audio, self.sr) for audio in audios])
+
+class LogMelEnergy(FeatureExtractor):
+    def __init__(self, sr=48000, n_mels=75, winlen=0.025, winstep=0.01, preemph=0.97, pooling='std'):
+        self.sr = sr
+        self.n_mels = n_mels
+        self.winlen = winlen
+        self.winstep = winstep
+        self.preemph = preemph
+        self.pooling = pooling  # 'mean', 'mean_std', 'std', or None
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        return np.array([self._extract(audio) for audio in X])
+
+    def _extract(self, audio_obj):
+        signal, sr = audio_obj, 48000
+        # signal = lfilter([1, -self.preemph], 1, signal)
+
+        # hop_length = int(self.winstep * sr)
+        win_length = int(self.winlen * sr)
+
+        mel_spec = librosa.feature.melspectrogram(
+            y=signal,
+            sr=sr,
+            n_fft=2048,
+            hop_length=512,
+            win_length=win_length,
+            window='hamming',
+            n_mels=self.n_mels,
+            power=2.0
+        )
+
+        log_mel_spec = librosa.power_to_db(mel_spec, ref=np.max)
+
+        # if self.pooling == 'mean':
+        #     return np.mean(log_mel_spec, axis=1)
+        # elif self.pooling == 'mean_std':
+        #     return np.concatenate([np.mean(log_mel_spec, axis=1), np.std(log_mel_spec, axis=1)])
+        # elif self.pooling == 'std':
+        return np.std(log_mel_spec, axis=1)
+        # else:
+        #     return log_mel_spec.T  # return (frames, bands)
+
+
+class HFCC(FeatureExtractor):
+    """
+    Class to extract HFCC features from audio data.
+    """
+
+    def __init__(self, config: dict = {}):
+        super().__init__(config)
+        self.n_hfcc = config.get("n_hfcc", 13)
+        self.sr = config.get("sr", 48000)
+
+    def _extract_hfcc(self, audio, sr):
+        # Extract HFCCs with custom parameters
+        stft = np.abs(librosa.stft(
+            y=audio, n_fft=2048, hop_length=512, window='hann'
+        ))
+        mel_filter = librosa.filters.mel(sr=sr, n_fft=2048, n_mels=75)
+        hfccs = np.log(np.dot(mel_filter, stft) + 1e-10)
+        
+        # Take mean across time to get 40 features
+        #return np.mean(hfccs, axis=1)
+        feature_mean = np.mean(hfccs, axis=1)
+        feature_var = np.var(hfccs, axis=1)
+        # feature_median = np.median(hfccs, axis=1)
+        #feature_mode = np.array([np.argmax(np.bincount(np.maximum(hfccs[:, i].astype(int), 1))) for i in range(hfccs.shape[1])])
+        # feature_q25 = np.quantile(hfccs, 0.25, axis=1)
+        # feature_q75 = np.quantile(hfccs, 0.75, axis=1)
+        # feature_min = np.min(hfccs, axis=1)
+        # feature_max = np.max(hfccs, axis=1)
+        return np.concatenate([
+            feature_mean, feature_var
+            # feature_mean, feature_var, feature_median,
+            # feature_q25, feature_q75, feature_min, feature_max
+        ])
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, audios: list) -> np.ndarray:
+        """
+        Extract HFCC features from audio data.
+
+        Parameters:
+            audio (np.ndarray): Audio data.
+
+        Returns:
+            np.ndarray: HFCC features.
+        """
+        return np.array([self._extract_hfcc(audio, self.sr) for audio in audios])
 
 class Model(ClassifierMixin, BaseEstimator, ABC):
     """
@@ -298,20 +399,27 @@ class SVM(Model):
       """
       return self.model.predict(X) if self.model else None
 
-with open(r".\trials\model_21_04_2025_T15_05_46_best\model.pkl", "rb") as f:
+with open(r"pipeline_cloudpickle.pkl", "rb") as f:
     model_pipe = cloudpickle.load(f)
 
-config = {'n_mfcc': 75, 'n_fft': 2048, 'hop_length': 512, 'context': 3, 'use_spectral_subtraction': False, 'use_smoothing': True, 'use_cmvn': False, 'use_deltas': True, 'sr': 40000}
+config = {'n_mfcc': 75, 'n_fft': 2048, 'hop_length': 512, 'context': 0, 'use_spectral_subtraction': False, 'use_smoothing': True, 'use_cmvn': False, 'use_deltas': False, 'sr': 48000}
+
+feature_extractors = FeatureUnion([
+    ('mfcc', MFCC({'n_mfcc': 75, 'n_fft': 2048, 'hop_length': 512, 'context': 0, 
+    'use_spectral_subtraction': False, 'use_smoothing': True, 
+    'use_cmvn': False, 'use_deltas': False, 'sr': 48000})),
+    ('hfcc', HFCC()),
+    ('logmel', LogMelEnergy(sr=48000, n_mels=75, winlen=0.025, winstep=0.01, preemph=0.97, pooling='std'))
+])
 
 pipeline = Pipeline([
     ('remove_dc', DCRemover()),
     ('enhance_quality', QualityEnhancer()),
     ('loudness_normalizer', LightLoudnessNormalizer()),
     ('silence_remover', SilenceRemover(amplitude_threshold=0.0005)),
-    ('feature_extractor', MFCC(config)),
-    ('pca', model_pipe.named_steps['pca']),
-    ('classifier', copy.deepcopy(model_pipe.named_steps['pipeline-2'].named_steps['svm'].model))
+    ('feature_extractor', feature_extractors),
+    ('classifier', copy.deepcopy(model_pipe.named_steps['classifier']))
 ])
 
-with open(r".\trials\model_21_04_2025_T15_05_46_best\export.pkl", "wb") as f:
+with open(r"export_pipeline_cloudpickle.pkl", "wb") as f:
     cloudpickle.dump(pipeline, f)

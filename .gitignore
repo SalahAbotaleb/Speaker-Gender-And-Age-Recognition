@@ -181,3 +181,8 @@ trials
 
 extracted_features/**
 examine_audio.ipynb
+/test_audio_files
+*.txt
+*.pkl
+*.joblib
+*.md

@@ -25,15 +25,16 @@ class HFCC(FeatureExtractor):
         #return np.mean(hfccs, axis=1)
         feature_mean = np.mean(hfccs, axis=1)
         feature_var = np.var(hfccs, axis=1)
-        feature_median = np.median(hfccs, axis=1)
+        # feature_median = np.median(hfccs, axis=1)
         #feature_mode = np.array([np.argmax(np.bincount(np.maximum(hfccs[:, i].astype(int), 1))) for i in range(hfccs.shape[1])])
-        feature_q25 = np.quantile(hfccs, 0.25, axis=1)
-        feature_q75 = np.quantile(hfccs, 0.75, axis=1)
-        feature_min = np.min(hfccs, axis=1)
-        feature_max = np.max(hfccs, axis=1)
+        # feature_q25 = np.quantile(hfccs, 0.25, axis=1)
+        # feature_q75 = np.quantile(hfccs, 0.75, axis=1)
+        # feature_min = np.min(hfccs, axis=1)
+        # feature_max = np.max(hfccs, axis=1)
         return np.concatenate([
-            feature_mean, feature_var, feature_median,
-            feature_q25, feature_q75, feature_min, feature_max
+            feature_mean, feature_var
+            # feature_mean, feature_var, feature_median,
+            # feature_q25, feature_q75, feature_min, feature_max
         ])
 
     def fit(self, X, y=None):

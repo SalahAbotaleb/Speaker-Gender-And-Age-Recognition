@@ -11,7 +11,7 @@ class MFCC(FeatureExtractor):
     def __init__(self, config: dict = {}):
         super().__init__(config)
 
-    def _extract_f0(self, audio, sr=16000, frame_length=2048, hop_length=512):
+    def _extract_f0(self, audio, sr=48000, frame_length=2048, hop_length=512):
       f0, voiced_flag, voiced_probs = librosa.pyin(
           audio, 
           fmin=librosa.note_to_hz('C2'),  # ~65 Hz (male)
