@@ -10,7 +10,7 @@ class AlphaRatio(FeatureExtractor):
 
     def __init__(self, config: dict = {}):
         super().__init__(config)
-        self.sr = config.get("sr", 22050)
+        self.sr = config.get("sr", 48000)
         self.low_freq = config.get("low_freq", 50)
         self.high_freq = config.get("high_freq", 1000)
 

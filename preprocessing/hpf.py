@@ -1,4 +1,4 @@
-from .preprocessing import Preprocessor
+from preprocessing import Preprocessor
 import numpy as np
 from scipy.signal import butter, lfilter
 
