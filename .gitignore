@@ -196,3 +196,5 @@ prediction.ipynb
 *.pkl
 *.joblib
 *.md
+
+venv*/
